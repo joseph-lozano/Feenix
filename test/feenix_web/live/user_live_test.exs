@@ -5,7 +5,8 @@ defmodule FeenixWeb.UserLiveTest do
 
   alias Feenix.Accounts
 
-  @create_attrs %{email: "some email", username: "some username"}
+  @create_attrs %{email: "some@email.com", username: "some other username"}
+  @save_attrs %{email: "other@email.com", username: "some username"}
   @update_attrs %{email: "some updated email", username: "some updated username"}
   @invalid_attrs %{email: nil, username: nil}
 
@@ -33,7 +34,7 @@ defmodule FeenixWeb.UserLiveTest do
       {:ok, index_live, _html} = live(conn, Routes.user_index_path(conn, :index))
 
       assert index_live |> element("a", "New User") |> render_click() =~
-        "New User"
+               "New User"
 
       assert_patch(index_live, Routes.user_index_path(conn, :new))
 
@@ -43,19 +44,19 @@ defmodule FeenixWeb.UserLiveTest do
 
       {:ok, _, html} =
         index_live
-        |> form("#user-form", user: @create_attrs)
+        |> form("#user-form", user: @save_attrs)
         |> render_submit()
         |> follow_redirect(conn, Routes.user_index_path(conn, :index))
 
       assert html =~ "User created successfully"
-      assert html =~ "some email"
+      assert html =~ @save_attrs[:email]
     end
 
     test "updates user in listing", %{conn: conn, user: user} do
       {:ok, index_live, _html} = live(conn, Routes.user_index_path(conn, :index))
 
       assert index_live |> element("#user-#{user.id} a", "Edit") |> render_click() =~
-        "Edit User"
+               "Edit User"
 
       assert_patch(index_live, Routes.user_index_path(conn, :edit, user))
 
@@ -95,7 +96,7 @@ defmodule FeenixWeb.UserLiveTest do
       {:ok, show_live, _html} = live(conn, Routes.user_show_path(conn, :show, user))
 
       assert show_live |> element("a", "Edit") |> render_click() =~
-        "Edit User"
+               "Edit User"
 
       assert_patch(show_live, Routes.user_show_path(conn, :edit, user))
 
